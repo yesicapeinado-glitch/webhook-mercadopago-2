@@ -5,11 +5,8 @@ export default async function handler(req, res) {
     console.log("Webhook recebido:", body);
 
     if (body.type === "payment") {
-      const paymentId = body.data?.id;
+      const paymentId = body.data.id;
 
-      console.log("Pagamento ID:", paymentId);
-
-      // 🔥 BUSCA DETALHES DO PAGAMENTO
       const response = await fetch(
         `https://api.mercadopago.com/v1/payments/${paymentId}`,
         {
@@ -21,16 +18,18 @@ export default async function handler(req, res) {
 
       const payment = await response.json();
 
-      console.log("Status do pagamento:", payment.status);
+      console.log("Pagamento completo:", payment);
 
-      // ✅ VERIFICA SE FOI APROVADO
+      // 🔥 AQUI É O QUE IMPORTA
       if (payment.status === "approved") {
-        console.log("PAGAMENTO APROVADO ✅");
+        console.log("✅ PAGAMENTO APROVADO");
 
-        // 👉 AQUI você pode:
-        // - enviar conversão pro Google Ads
-        // - liberar acesso
-        // - salvar no banco
+        // 👉 AQUI você faz o que quiser:
+        // liberar acesso
+        // enviar evento pro Google Ads
+        // salvar no banco
+      } else {
+        console.log("❌ Pagamento não aprovado:", payment.status);
       }
     }
 
