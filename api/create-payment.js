@@ -25,18 +25,21 @@ export default async function handler(req, res) {
       {
         title: titulo,
         quantity: 1,
-        unit_price: valor, // 🔥 valor real (produção)
+        unit_price: valor,
       },
     ],
 
-   back_urls: {
-  success: `https://yesicapeinadotransforma.com/obrigado?valor=${valor}&gclid=${gclidSafe}`,
-  failure: `https://yesicapeinadotransforma.com/erro`,
-  pending: `https://yesicapeinadotransforma.com/pendente?valor=${valor}&gclid=${gclidSafe}`,
-},
+    back_urls: {
+      success: `https://yesicapeinadotransforma.com/obrigado?valor=${valor}&gclid=${gclidSafe}`,
+      failure: `https://yesicapeinadotransforma.com/erro`,
+      pending: `https://yesicapeinadotransforma.com/pendente?valor=${valor}&gclid=${gclidSafe}`,
     },
 
     auto_return: "approved",
+
+    // 🔥 ESSAS DUAS LINHAS SÃO O PASSO ATUAL
+    notification_url: "https://webhook-mercadopago-2.vercel.app/api/webhook",
+    external_reference: `${tipo}-${Date.now()}`
   };
 
   try {
