@@ -3,47 +3,58 @@ export default async function handler(req, res) {
 
   const gclidSafe = gclid || "";
 
-  let valor = 0;
+  let valorReal = 0;
+  let valorCobrado = 1; // 🔥 TESTE COM R$1
   let titulo = "";
 
   if (tipo === "individual") {
-    valor = 120;
+    valorReal = 120;
     titulo = "Sessão individual";
   }
 
   if (tipo === "mensal") {
-    valor = 360;
+    valorReal = 360;
     titulo = "Acompanhamento mensal";
   }
 
-  if (!valor) {
+  if (!valorReal) {
     return res.status(400).json({ error: "Tipo inválido" });
   }
 
-  const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-    },
-    body: JSON.stringify({
-      items: [
-        {
-          title: titulo,
-          quantity: 1,
-          unit_price: valor,
-        },
-      ],
-      back_urls: {
-        success: `https://yesicapeinadotransforma.com/obrigado?valor=${valor}&gclid=${gclidSafe}`,
-        failure: `https://yesicapeinadotransforma.com/erro`,
-        pending: `https://yesicapeinadotransforma.com/pendente`,
+  const preference = {
+    items: [
+      {
+        title: titulo,
+        quantity: 1,
+        unit_price: valorCobrado, // 🔥 cobra R$1
       },
-      auto_return: "approved",
-    }),
-  });
+    ],
 
-  const data = await response.json();
+    back_urls: {
+      success: `https://yesicapeinadotransforma.com/obrigado?valor=${valorReal}&gclid=${gclidSafe}`,
+      failure: `https://yesicapeinadotransforma.com/erro`,
+      pending: `https://yesicapeinadotransforma.com/pendente`,
+    },
 
-  return res.redirect(data.init_point);
+    auto_return: "approved",
+  };
+
+  try {
+    const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(preference),
+    });
+
+    const data = await response.json();
+
+    return res.redirect(data.init_point);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao criar pagamento" });
+  }
 }
