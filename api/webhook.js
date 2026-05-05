@@ -1,42 +1,30 @@
-export default async function handler(req, res) {
-  try {
-    const body = req.body;
+if (body.type === "payment") {
+  const paymentId = body.data.id;
 
-    console.log("Webhook recebido:", body);
-
-    if (body.type === "payment") {
-      const paymentId = body.data.id;
-
-      const response = await fetch(
-        `https://api.mercadopago.com/v1/payments/${paymentId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-          },
-        }
-      );
-
-      const payment = await response.json();
-
-      console.log("Pagamento completo:", payment);
-
-      // 🔥 AQUI É O QUE IMPORTA
-      if (payment.status === "approved") {
-        console.log("✅ PAGAMENTO APROVADO");
-
-        // 👉 AQUI você faz o que quiser:
-        // liberar acesso
-        // enviar evento pro Google Ads
-        // salvar no banco
-      } else {
-        console.log("❌ Pagamento não aprovado:", payment.status);
-      }
+  const response = await fetch(
+    `https://api.mercadopago.com/v1/payments/${paymentId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+      },
     }
+  );
 
-    return res.status(200).json({ ok: true });
+  const payment = await response.json();
 
-  } catch (error) {
-    console.error("Erro no webhook:", error);
-    return res.status(500).json({ error: true });
+  console.log("Status atual:", payment.status);
+
+  // 🔥 TRATAMENTO CORRETO
+  if (payment.status === "approved") {
+    console.log("✅ PAGAMENTO CONFIRMADO");
+
+  } else if (payment.status === "pending") {
+    console.log("⏳ Aguardando pagamento");
+
+  } else if (payment.status === "in_process") {
+    console.log("🔄 Em processamento");
+
+  } else {
+    console.log("❌ Ainda não aprovado:", payment.status);
   }
 }
