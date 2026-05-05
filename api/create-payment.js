@@ -29,10 +29,11 @@ export default async function handler(req, res) {
       },
     ],
 
-    back_urls: {
-      success: `https://yesicapeinadotransforma.com/obrigado?valor=${valor}&gclid=${gclidSafe}`,
-      failure: `https://yesicapeinadotransforma.com/erro`,
-      pending: `https://yesicapeinadotransforma.com/pendente`,
+   back_urls: {
+  success: `https://yesicapeinadotransforma.com/obrigado?valor=${valor}&gclid=${gclidSafe}`,
+  failure: `https://yesicapeinadotransforma.com/erro`,
+  pending: `https://yesicapeinadotransforma.com/pendente?valor=${valor}&gclid=${gclidSafe}`,
+},
     },
 
     auto_return: "approved",
