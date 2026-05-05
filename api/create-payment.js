@@ -3,21 +3,20 @@ export default async function handler(req, res) {
 
   const gclidSafe = gclid || "";
 
-  let valorReal = 0;
-  let valorCobrado = 1; // 🔥 TESTE COM R$1
+  let valor = 0;
   let titulo = "";
 
   if (tipo === "individual") {
-    valorReal = 120;
+    valor = 120;
     titulo = "Sessão individual";
   }
 
   if (tipo === "mensal") {
-    valorReal = 360;
+    valor = 360;
     titulo = "Acompanhamento mensal";
   }
 
-  if (!valorReal) {
+  if (!valor) {
     return res.status(400).json({ error: "Tipo inválido" });
   }
 
@@ -26,12 +25,12 @@ export default async function handler(req, res) {
       {
         title: titulo,
         quantity: 1,
-        unit_price: valorCobrado, // 🔥 cobra R$1
+        unit_price: valor, // 🔥 valor real (produção)
       },
     ],
 
     back_urls: {
-      success: `https://yesicapeinadotransforma.com/obrigado?valor=${valorReal}&gclid=${gclidSafe}`,
+      success: `https://yesicapeinadotransforma.com/obrigado?valor=${valor}&gclid=${gclidSafe}`,
       failure: `https://yesicapeinadotransforma.com/erro`,
       pending: `https://yesicapeinadotransforma.com/pendente`,
     },
@@ -54,7 +53,7 @@ export default async function handler(req, res) {
     return res.redirect(data.init_point);
 
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao criar pagamento:", error);
     return res.status(500).json({ error: "Erro ao criar pagamento" });
   }
 }
