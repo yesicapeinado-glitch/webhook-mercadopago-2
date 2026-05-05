@@ -9,7 +9,6 @@ export default async function handler(req, res) {
     const response = await fetch(
       `https://api.mercadopago.com/v1/payments/${payment_id}`,
       {
-        method: "GET",
         headers: {
           Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
         },
@@ -23,7 +22,7 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error("Erro ao consultar pagamento:", error);
+    console.error(error);
     return res.status(500).json({ error: "Erro ao consultar pagamento" });
   }
 }
